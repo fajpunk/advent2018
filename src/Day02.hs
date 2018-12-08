@@ -49,18 +49,18 @@ genPairs myList = do
   y          <- rest
   return (x, y)
 
-data PairInfo = PairInfo { numDifferent :: Integer, commonLetters :: S.Set Char }
+data PairInfo = PairInfo { numDifferent :: Integer, commonLetters :: [Char] }
   deriving Show
 
 analyzePair :: (String, String) -> PairInfo
-analyzePair (id1, id2) = analyze (zip id1 id2) (PairInfo 0 S.empty)
+analyzePair (id1, id2) = analyze (zip id1 id2) (PairInfo 0 [])
  where
   analyze [] info = info
   analyze (letters : rest) info =
     let (char1, char2) = letters
         PairInfo { numDifferent = different, commonLetters = common } = info
         newInfo        = if char1 == char2
-          then PairInfo different (S.insert char1 common)
+          then PairInfo different (common <> [char1])
           else PairInfo (different + 1) common
     in  analyze rest newInfo
 
@@ -68,13 +68,13 @@ findMatchingBoxes :: [String] -> Maybe PairInfo
 findMatchingBoxes ids =
   let pairs = genPairs ids
       infos = analyzePair <$> pairs
-   in find (\pair -> (numDifferent pair) == 1) infos
+  in  find (\pair -> (numDifferent pair) == 1) infos
 
 
 day2b :: IO ()
 day2b = do
   let input = inputFilePath "day2.txt"
   content <- readFile input
-  let ids = lines content
-  let boxInfo = findMatchingBoxes(ids)
+  let ids     = lines content
+  let boxInfo = findMatchingBoxes (ids)
   print boxInfo
