@@ -25,6 +25,7 @@ dependencies:
 - containers
 - megaparsec
 - prettyprinter
+- text
 
 library:
   source-dirs: src
