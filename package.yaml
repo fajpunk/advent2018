@@ -26,6 +26,7 @@ dependencies:
 - megaparsec
 - prettyprinter
 - text
+- regex-tdfa
 
 library:
   source-dirs: src

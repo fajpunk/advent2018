@@ -54,6 +54,9 @@ closest point candidates = foldr1 go candidates
   go cand1 cand2 =
     if (distance cand1 point) < (distance cand2 point) then cand1 else cand2
 
+sumDistances :: [Point] -> Point -> Int
+sumDistances points location = sum $ (distance location) <$> points
+
 closestNoTies :: [Point] -> Point -> Maybe Point
 closestNoTies (c : cs) point =
   let initialDist = distance point c in go (initialDist, False, c) cs
@@ -82,15 +85,28 @@ day6a :: IO ()
 day6a = do
   let input = inputFilePath "day6.txt"
   content <- TIO.readFile input
-  let inputPoints = parsePoint <$> (T.lines content)
-  let box         = boundingBox inputPoints
-  let interior    = interiorPoints box
-  let border      = borderPoints box
-  let infinite    = infinitePoints inputPoints border
+  let inputPoints  = parsePoint <$> (T.lines content)
+  let box          = boundingBox inputPoints
+  let interior     = interiorPoints box
+  let border       = borderPoints box
+  let infinite     = infinitePoints inputPoints border
   let allClosest = catMaybes $ (closestNoTies inputPoints) <$> interior
   let sansInfinite = filter (\x -> not (elem x infinite)) allClosest
-  let blah        = (fmap length) . group . sort $ sansInfinite
+  let blah         = (fmap length) . group . sort $ sansInfinite
   print $ length allClosest
   print $ length sansInfinite
   print $ length blah
   print $ maximum blah
+
+day6b = do
+  let input = inputFilePath "day6.txt"
+  content <- TIO.readFile input
+  let inputPoints  = parsePoint <$> (T.lines content)
+  let box          = boundingBox inputPoints
+  let interior     = interiorPoints box
+  let border       = borderPoints box
+  let allPoints = border ++ interior
+  let distances = (sumDistances inputPoints) <$> allPoints
+  let smallDistances = filter (< 10000) distances
+  let size = length smallDistances
+  print size
